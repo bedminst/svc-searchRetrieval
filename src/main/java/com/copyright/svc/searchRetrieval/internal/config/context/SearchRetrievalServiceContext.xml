@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tool="http://www.springframework.org/schema/tool" xmlns:aop="http://www.springframework.org/schema/aop" xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://www.springframework.org/schema/tool
+		http://www.springframework.org/schema/tool/spring-tool-2.5.xsd
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+
+	<import resource="classpath:com/copyright/mediadelivery/svc/api/mds-context.xml"/>
+
+	<bean id="cccWrContextBean" class="com.copyright.svc.searchRetrieval.mock.CccWrMediaContext">
+	</bean>
+
+	<bean id="natureContextBean" class="com.copyright.svc.searchRetrieval.mock.NatureMediaContext">
+	</bean>
+
+	<bean id="summitContextBean" class="com.copyright.svc.searchRetrieval.mock.MockSummitMediaContext">
+	</bean>
+
+	<bean id="searchRetrievalDAOBean" class="com.copyright.svc.searchRetrieval.internal.persist.SearchRetrievalDAOImpl">
+		<property name="searchServices"			ref="searchServices" />
+		<property name="searcherClient"			ref="searcherClient"/>								
+	</bean>
+
+	<bean id="searchRetrievalServiceBean" class="com.copyright.svc.searchRetrieval.internal.SearchRetrievalServiceImpl">
+		<property name="searchRetrievalDao"			ref="searchRetrievalDAOBean" />
+		<property name="titleAutosuggestIndexDao"	ref="titleAutosuggestIndexDAOBean" />
+		<property name="context"					ref="summitContextBean" />
+		<property name="updateIndex"				value="$MDS{update_index}"/>								
+	</bean>
+
+	<bean id="titleAutosuggestIndexDAOBean" class="com.copyright.svc.searchRetrieval.internal.persist.TitleAutosuggestIndexDAOImpl">
+		<property name="autosuggestMasterServer"	ref="titleAutosuggestMasterSolrServerBean" />								
+		<property name="autosuggestSlaveServer"		ref="titleAutosuggestSlaveSolrServerBean" />								
+		<property name="similarity"					value="$MDS{similarity_title_autosuggest}"/>								
+		<property name="taskExecutor">				
+			<ref local="titleInsertExecutor" />
+		</property>
+	</bean>
+
+	<bean id="titleAutosuggestMasterSolrServerBean" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
+		<constructor-arg><value>$MDS{endpoint_title_autosuggest_master}</value></constructor-arg>
+	</bean>
+
+	<bean id="titleAutosuggestSlaveSolrServerBean" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
+		<constructor-arg><value>$MDS{endpoint_title_autosuggest_slave}</value></constructor-arg>
+	</bean>
+
+	<bean id="titleInsertExecutor"
+		class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="100" />
+		<property name="maxPoolSize" value="200" />
+		<property name="queueCapacity" value="50" />
+	</bean>
+
+	<!--
+		Manages the log4j Mapped Diagnostic Context (MDC).  This should be the first 
+		AOP aspect in this file, so that any other aspect that writes log messages
+		will have a properly configured MDC.  
+	 -->
+	<bean id="consumerContextAdvice" class="com.copyright.svc.common.advice.ConsumerContextAdvice" />
+	<aop:config>
+		<aop:aspect ref="consumerContextAdvice">
+			<aop:before 
+				method="setupMDC" 
+				pointcut="execution(* com.copyright.svc.searchRetrieval.api.*.*(..)) and args(consumerContext,..)" 
+			/>
+			<aop:after 
+				method="cleanupMDC" 
+				pointcut="execution(* com.copyright.svc.searchRetrieval.api.*.*(..))" 
+			/>
+		</aop:aspect>
+	</aop:config>
+
+	<!--
+		Uncaught exceptions not matching the patterns below are logged and converted into 
+		ServiceRuntimeExceptions.
+	  -->
+	<bean id="exceptionAdvice" class="com.copyright.svc.common.advice.ExceptionAdvice">
+		<constructor-arg>
+			<list>
+				<value>java.*</value>
+				<value>com.copyright.svc.searchRetrieval.api.*</value>
+			</list>
+		</constructor-arg>
+	</bean>
+	<aop:config>
+		<aop:aspect ref="exceptionAdvice">
+			<aop:after-throwing 
+				method="translateException" 
+				throwing="throwable" 
+				pointcut="execution(* com.copyright.svc.searchRetrieval.api.*.*(..))"/>
+		</aop:aspect>
+	</aop:config>
+
+</beans>

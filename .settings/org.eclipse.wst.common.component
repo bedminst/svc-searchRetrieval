@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="svc-searchRetrieval">
+        <wb-resource deploy-path="/" source-path="/src/main/webroot"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/client/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/java"/>
+        <property name="context-root" value="/svc-searchRetrieval"/>
+        <property name="java-output-path" value="/svc-searchRetrieval/src/main/webroot/WEB-INF/classes"/>
+    </wb-module>
+</project-modules>

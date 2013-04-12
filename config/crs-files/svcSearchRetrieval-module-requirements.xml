@@ -1,0 +1,6 @@
+<moduleRequirements>
+  <module name="SRS" version="1.4"/>
+  <resources>
+    <resourceDescriptor name="svcIndexSearcher.search" version="1.0"/>
+  </resources>
+</moduleRequirements>

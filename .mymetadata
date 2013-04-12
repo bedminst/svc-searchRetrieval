@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="svc-searchRetrieval"
+  id="myeclipse.1261407094256"
+  context-root="/svc-searchRetrieval"
+  j2ee-spec="5.0"
+  archive="svc-searchRetrieval.war">
+  <attributes>
+    <attribute name="webrootdir" value="/src/main/webroot" />
+  </attributes>
+</project-module>
+

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+
+	<!-- Read in the remote service endpoint attribute from a property file -->
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:com/copyright/svc/searchRetrieval/client/remote/RemoteSpringSearchRetrievalClient.properties</value>
+			</list>
+		</property>
+		<property name="placeholderPrefix" value="$SVC-EX-CLNT{"/>
+	</bean>
+	
+	<bean id="srs_client" class="com.copyright.svc.searchRetrieval.client.remote.RemoteSpringSearchRetrievalClient">
+	  <property name="searchRetrievalService" ref="srs_svc"/>
+	</bean>
+	
+	<bean id="srs_svc" class="org.springframework.remoting.caucho.BurlapProxyFactoryBean">
+		<property name="serviceUrl" value="$SVC-EX-CLNT{searchRetrieval_svc_endpoint}"/>
+		<property name="overloadEnabled" value="true" />
+		<property name="serviceInterface" value="com.copyright.svc.searchRetrieval.api.SearchRetrievalService"/>
+	</bean>
+
+</beans>

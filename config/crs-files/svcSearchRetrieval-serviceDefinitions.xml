@@ -1,0 +1,5 @@
+ <serviceDefinitions  currentBuild="@build.suffix@">
+  	<services>
+		<serviceDefinition name="svcSearchRetrieval.searchRetrieve" version="@version.number@" urlSuffix="searchRetrieve" urlContext="ws-searchRetrieval"/>
+ 	</services>
+</serviceDefinitions>

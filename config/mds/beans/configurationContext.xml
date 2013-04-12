@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+
+
+  <!--  this bean is currently used through a static method call when
+        called from other shared services. For this use case, there is no
+        need to define the bean as we have done below. 
+        When the services are being used within the context of a web-app
+        however, we do want to initialize it here because it implements the 
+        ApplicationContextAware interface and we want the bean to know 
+        the application context that owns it.
+   -->
+	<bean id="configurations" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="placeholderPrefix" value="$MDS{" />
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+		<!--  if dev-property-overrides not found, we don't care -->
+    	<property name="ignoreResourceNotFound" value="true"/>
+    	<!--  some properties are undefined outside of a test environment, 
+    	      this is okay. we tell Spring it's okay and not to choke -->
+    	<property name="ignoreUnresolvablePlaceholders" value="true"/>
+     	<property name="locations">
+    	   <list>
+    	        <value>file:${config.dir}/${mds.configKey}/properties/SearchRetrievalService.properties</value>
+    	    </list>
+    	</property>
+    </bean>
+    	
+	<bean id="crsConfigurations" class="com.copyright.crs.client.api.CRSPropertyPlaceholderConfigurer">
+        <property name="placeholderPrefix" value="$CRSREF{" />
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+		<!--  if dev-property-overrides not found, we don't care -->
+    	<property name="ignoreResourceNotFound" value="true"/>
+    	<!--  some properties are undefined outside of a test environment, 
+    	      this is okay. we tell Spring it's okay and not to choke -->
+    	<property name="ignoreUnresolvablePlaceholders" value="true"/>
+    	<!-- This is the key that has been assigned to the application (aka module) -->
+		<property name="moduleName" value="SRS"/>
+		<!-- This is the version of the application/module -->
+		<!-- Could set this property is you are not using the -->
+		<!-- versiondata.txt file<property name="moduleVersion" value="1.6"/> -->
+		<property name="versionData" value="com/copyright/svc/searchRetrieval/versiondata.txt"/>
+	</bean>
+	
+
+</beans>

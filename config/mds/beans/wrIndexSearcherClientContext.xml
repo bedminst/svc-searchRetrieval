@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+"http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<bean id="searcherClient" singleton="false" class="com.copyright.srs.connectors.cccwr.searcherclient.IndexSearcherClient">
+		<property name="serviceUrl" value="$CRSREF{svcIndexSearcher.search.endpointURL}"/>
+	</bean>
+	
+</beans>

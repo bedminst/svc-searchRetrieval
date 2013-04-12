@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/client/java"/>
+	<classpathentry kind="src" path="src/test/java"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="melibrary.com.genuitec.eclipse.j2eedt.core.MYECLIPSE_JAVAEE_5_CONTAINER"/>
+	<classpathentry kind="lib" path="N:/builds/ccc-svc-common/build_latest_trunk/bin/jars/DEBUG/ccc-svc-common.jar"/>
+	<classpathentry kind="lib" path="N:/builds/ccc-app-integrity/build_latest_trunk/bin/jars/DEBUG/ccc-app-integrity.jar"/>
+	<classpathentry kind="lib" path="N:/workspace/lib/pool/1.0/log4j-1.2.13.jar"/>
+	<classpathentry kind="lib" path="N:/workspace/lib/framework/spring-2.5.5/spring-2.5.5.jar" sourcepath="N:/workspace/src/spring-2.5.5/spring-sources.jar"/>
+	<classpathentry kind="lib" path="N:/workspace/lib/framework/spring-2.5.5/aspectjweaver.jar"/>
+	<classpathentry kind="lib" path="N:/workspace/lib/framework/spring-2.5.5/aspectjrt.jar"/>
+	<classpathentry kind="lib" path="N:/workspace/lib/framework/spring-2.5.5/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="N:/workspace/lib/pool/1.0/commons-lang-2.2.jar" sourcepath="N:/workspace/src/commons-lang-2.2-src.zip"/>
+	<classpathentry kind="lib" path="N:/workspace/lib/framework/spring-2.5.5/ibatis-2.3.2.715.jar" sourcepath="N:/workspace/src/spring-2.5.5/ibatis-src.zip"/>
+	<classpathentry kind="lib" path="N:/workspace/lib/framework/spring-2.5.5/hessian-3.2.0.jar" sourcepath="N:/workspace/src/spring-2.5.5/hessian-3.2.0-src.jar"/>
+	<classpathentry kind="lib" path="N:/workspace/lib/framework/spring-2.5.5/spring-webmvc-2.5.5.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/srs-connectors"/>
+	<classpathentry kind="lib" path="lib/com.noelios.restlet.jar"/>
+	<classpathentry kind="lib" path="lib/jdom-0.7.jar"/>
+	<classpathentry kind="lib" path="lib/json-in-java.jar"/>
+	<classpathentry kind="lib" path="lib/org.restlet.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/media-delivery-system"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/srs-core"/>
+	<classpathentry kind="lib" path="N:/workspace/lib/pool/1.5/commons-lang-2.2.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="lib" path="lib/apache-solr-solrj-3.3.0.jar"/>
+	<classpathentry kind="lib" path="lib/commons-httpclient-3.1.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-api-1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec-1.4.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ccc-base"/>
+	<classpathentry kind="lib" path="N:/builds/configuration-resource-system/build_latest_trunk/bin/jars/DEBUG/configuration-resource-system.jar" sourcepath="N:/builds/configuration-resource-system/build_latest_trunk/src"/>
+	<classpathentry kind="lib" path="lib/xstream-1.3.1.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/svc-indexSearcher"/>
+	<classpathentry kind="output" path="src/main/webroot/WEB-INF/classes"/>
+</classpath>

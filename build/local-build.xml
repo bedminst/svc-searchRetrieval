@@ -1,0 +1,40 @@
+<project name="svc-searchRetrieval-local" basedir="..">
+
+	<property file="${ant.home}/master.properties" />
+	<property file="build/local-build.properties" />
+	<import file="build.xml" />
+
+		
+	<!-- override to use local version -->
+	<target name="srs.connectors.init">
+
+        <property name="srs.connectors.jar.path" value="${local.workspace.path}/srs-connectors/out/jars" />
+		<echo message="srs-connectors jar path = ${srs.connectors.jar.path}" />
+
+	</target>
+	
+	<target name="srs.core.init">
+
+        <property name="srs.core.jar.path" value="${local.workspace.path}/srs-core/out/jars" />
+		<echo message="srs-core jar path = ${srs.core.jar.path}" />
+
+	</target>
+	
+	<!-- override to implement -->
+	<target name="local-deploy-impl">
+
+    	<copy todir="${local.server.deploy.dir}">
+         	<fileset file="${ccc.build.wars.DEBUG.dir}/${ccc.svc.artifact.war.name}" />
+        </copy>
+
+    	<copy todir="${local.server.conf.dir}">
+			<fileset file="config/**" />
+        </copy>
+
+	</target>
+
+	<!-- override some targets to suppress -->
+	<target name="analysis" />
+	<target name="test" />
+
+</project>

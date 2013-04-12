@@ -1,0 +1,291 @@
+<!--
+
+	Copyright 2008, Copyright Clearance Center.  All rights reserved.
+	
+	This build script is administered by the SCM Group at CCC.
+	It should be considered the reference build script for
+	the containing project, and consequently should not be
+	modified outside of the SCM group without prior approval.
+	
+	http://wiki.copyright.com/twiki/bin/view/Depts/ITG/SCMHomePage
+
+-->
+
+<project name="svc-searchRetrieval" basedir=".." >
+
+    <echo message="*************************************" />
+    <echo message="* Project Name: ${ant.project.name}" />
+    <echo message="*************************************" />
+    <property name="project.name" value="${ant.project.name}" />
+
+    <!-- init properties -->
+    <property file="${ant.home}/master.properties" />
+    <property file="build/build.properties" />
+    <property name="ccc.ant.dist.key" value="0091" />		
+
+    <!-- import parent build file -->
+    <import file="${ccc.build.framework.dir}/svc-build.xml" />
+
+    <!-- target to incorporate templates -->
+    <target name="templateSubstitutions">
+	<echo message="Performing Template Substitutions" />
+        <template.copy.one.all file="config/mds/properties/SearchRetrievalService.properties.template">
+            <globmapper from="*.template" to="*" />
+        </template.copy.one.all>
+    </target>
+	
+    <!-- overrides svc-build implementation -->
+    <target name="init" depends="depend.init,srs.connectors.init,srs.core.init,templateSubstitutions">
+
+        <echo message="media-delivery-system path = ${media.delivery.system.path}" />
+        <echo message="srs.connectors.jar.path = ${srs.connectors.jar.path}" />
+
+        <macro.svcPath
+                property="svc.indexSearcher.path"
+                svc.name="indexSearcher"
+                svc.version="${svc.indexSearcher.version}"
+        />
+        <echo message="svc-indexSearcher path = ${svc.indexSearcher.path}" />
+
+
+        <path id="custom.classpath" >
+            <fileset file="${srs.connectors.jar.path}/PROD/srs-connectors.jar" />
+            <fileset file="${srs.core.jar.path}/PROD/srs-core.jar" />
+            <fileset file="${media.delivery.system.path}/bin/jars/PROD/media-delivery-system.jar" />
+            <fileset file="${svc.indexSearcher.path}/PROD/svc-indexSearcher-client-${svc.indexSearcher.version}.jar" />
+            <fileset dir="./lib" includes="*.jar" />
+        </path>
+		
+        <!-- define test classpath that is currently used only by FindBugs.
+             this is needed to declare runtime dependencies that are not compiletime dependencies.
+             could be used for unit testing in the future. -->
+        <path id="test.classpath">
+            <path refid="svc.build.classpath" />
+            <fileset file="${srs.connectors.jar.path}/PROD/srs-connectors.jar" />
+            <fileset file="${srs.core.jar.path}/PROD/srs-core.jar" />
+            <fileset file="${media.delivery.system.path}/bin/jars/PROD/media-delivery-system.jar" />
+            <fileset file="${svc.indexSearcher.path}/PROD/svc-indexSearcher-client-${svc.indexSearcher.version}.jar" />
+            <fileset dir="./lib" includes="*.jar" />
+        </path>
+
+    </target>
+	
+    <target name="srs.connectors.init">
+
+        <property name="srs.connectors.jar.path" value="${srs.connectors.path}/bin/jars" />
+        <echo message="srs-connectors jar path = ${srs.connectors.jar.path}" />
+
+    </target>
+
+    <target name="srs.core.init">
+
+        <property name="srs.core.jar.path" value="${srs.core.path}/bin/jars" />
+        <echo message="srs-core jar path = ${srs.core.jar.path}" />
+
+    </target>
+
+    <!--
+
+        The conventional five CCC build framework targets are imported
+        and can be invoked via this script.  They are:
+
+        usage, build, cleanbuild, api, test
+
+        Also the publish-impl target should be overridden in this
+        script to specify the precise artifacts of this project.
+
+    -->
+
+    <!-- overrides svc-build implementation -->
+    <!-- 1) include srs-connectors/MDS/svc-indexSearcher-client JARs PROD/DEBUG (cannot be done in pre-war override) -->
+    <!-- scraped from ccc-ant 0067 -->
+    <target name="war-impl" unless="disable.war" >
+		
+        <mkdir dir="${ccc.build.wars.PROD.dir}" />
+        <mkdir dir="${ccc.build.wars.DEBUG.dir}" />
+
+        <!-- we need to get Maven or Ivy into the picture. -->
+        <property name="ccc.path.to.framework.jars"
+        value="${ccc.framework.lib.root}/${ccc.depend.framework.version}" />
+        <property name="ccc.svc.war.framework.includesfile"
+        value="${ccc.build.framework.dir}/svc-build-war-framework-includes.txt" />
+        <property name="ccc.svc.war.custom.includesdir"
+        value="lib" />	
+        <property name="ccc.svc.war.custom.includesfile"
+        value="${ccc.build.framework.dir}/svc-build-war-custom-includes.txt" />
+        <mkdir dir="${ccc.svc.war.custom.includesdir}" />
+
+        <echo message="destination = ${ccc.build.wars.PROD.dir}/${ccc.svc.artifact.war.name}" />
+        <war destfile="${ccc.build.wars.PROD.dir}/${ccc.svc.artifact.war.name}"
+                webxml="${ccc.build.src.webinf.dir}/web.xml" >
+            <fileset dir="${ccc.build.src.webroot.dir}" excludes="WEB-INF/**" />
+            <webinf dir="${ccc.build.src.webinf.dir}" excludes="web.xml"/>
+            <lib file="${ccc.build.jars.PROD.dir}/${ccc.svc.artifact.jar.name}" />
+            <lib dir="${ccc.path.to.framework.jars}" includesfile="${ccc.svc.war.framework.includesfile}" />
+            <lib dir="${ccc.svc.war.custom.includesdir}" includesfile="${ccc.svc.war.custom.includesfile}" />
+            <lib file="${cccbase.path}/bin/jars/${ccc.depend.cccbase.compilertype}/PROD/ccc-base.jar" />
+            <lib file="${cccsvccommon.path}/bin/jars/PROD/ccc-svc-common.jar" />
+            <lib file="${cccappintegrity.path}/bin/jars/PROD/ccc-app-integrity.jar" />
+            <lib file="${ccc.solr.extensions.path}/bin/jars/PROD/ccc-solr-ext.jar" />
+            <lib file="${srs.connectors.jar.path}/PROD/srs-connectors.jar" />
+            <lib file="${srs.core.jar.path}/PROD/srs-core.jar" />
+            <lib file="${media.delivery.system.path}/bin/jars/PROD/media-delivery-system.jar" />
+            <lib file="${svc.indexSearcher.path}/PROD/svc-indexSearcher-client-${svc.indexSearcher.version}.jar" />
+            <manifest>
+                <section name="Build-Data">
+                    <attribute name="Build-Version" value="${ccc.svc.artifact.version}" />
+                    <attribute name="Build-Flavor" value="PROD" />
+                    <attribute name="Build-Date" value="${TODAY}" />
+                    <attribute name="Build-Time" value="${TSTAMP}" />
+                    <attribute name="Built-By" value="${user.name}" />
+                    <attribute name="Built-Using" value="jdk6" />
+                </section>
+            </manifest>
+        </war>
+		
+        <war destfile="${ccc.build.wars.DEBUG.dir}/${ccc.svc.artifact.war.name}"
+                webxml="${ccc.build.src.webinf.dir}/web.xml" >
+            <fileset dir="${ccc.build.src.webroot.dir}" excludes="WEB-INF/**" />
+            <webinf dir="${ccc.build.src.webinf.dir}" excludes="web.xml"/>
+            <lib file="${ccc.build.jars.DEBUG.dir}/${ccc.svc.artifact.jar.name}" />
+            <lib dir="${ccc.path.to.framework.jars}" includesfile="${ccc.svc.war.framework.includesfile}" />
+            <lib dir="${ccc.svc.war.custom.includesdir}" includesfile="${ccc.svc.war.custom.includesfile}" />
+            <lib file="${cccbase.path}/bin/jars/${ccc.depend.cccbase.compilertype}/DEBUG/ccc-base.jar" />
+            <lib file="${cccsvccommon.path}/bin/jars/DEBUG/ccc-svc-common.jar" />
+            <lib file="${cccappintegrity.path}/bin/jars/DEBUG/ccc-app-integrity.jar" />
+            <lib file="${ccc.solr.extensions.path}/bin/jars/DEBUG/ccc-solr-ext.jar" />
+            <lib file="${srs.connectors.jar.path}/DEBUG/srs-connectors.jar" />
+            <lib file="${srs.core.jar.path}/DEBUG/srs-core.jar" />
+            <lib file="${media.delivery.system.path}/bin/jars/DEBUG/media-delivery-system.jar" />
+            <lib file="${svc.indexSearcher.path}/DEBUG/svc-indexSearcher-client-${svc.indexSearcher.version}.jar" />
+            <manifest>
+                <section name="Build-Data">
+                    <attribute name="Build-Version" value="${ccc.svc.artifact.version}" />
+                    <attribute name="Build-Flavor" value="DEBUG" />
+                    <attribute name="Build-Date" value="${TODAY}" />
+                    <attribute name="Build-Time" value="${TSTAMP}" />
+                    <attribute name="Built-By" value="${user.name}" />
+                    <attribute name="Built-Using" value="jdk6" />
+                </section>
+            </manifest>
+        </war>
+			
+    </target>
+
+
+    <!-- Create uDeploy specific files -->
+    <target name="udeploy-setup" >
+
+	<mkdir dir="${artifacts.dir}/urbandeploy/deploy" />
+
+	<!-- Create file that defines the artifact set to be retrieved by uDeploy -->
+	<echo file="${artifacts.dir}/urbandeploy/${project.name}-all.txt" append="false" >
+{ component: "${project.name}-luntbuild", properties: { version: "${build.number}", schedule: "release" } }
+	</echo>
+
+	<!-- Create deploy script to be used by uDeploy -->
+
+	<echo file="${artifacts.dir}/urbandeploy/deploy/initiator.sh" append="false" >#!bash
+
+# Project Info
+export PROJECT_NAME="${project.name}"
+export PROJECT_VERSION="${build.number}"
+
+# Binary artifact file
+export BINARY_DIR="bin/wars/PROD"
+export BINARY_NAME="ws-searchRetrieval"
+export BINARY_FILE="${BINARY_NAME}-${PROJECT_VERSION}.war"
+
+# Properties file
+export PROPERTIES_DIR="config"
+export PROPERTIES_FILES="SearchRetrievalService.properties"
+
+# JBoss Container 
+export CONTAINER="EXTRC1"
+
+# Environment Script for the JBoss Container 
+export ENVSCRIPT="${CONTAINER}${ENV_NAME}ENV"
+
+/bin/bash -x ./deploy-scripts/bin/deployment-controller.sh
+
+	</echo>
+
+
+    </target>
+
+    <!-- overrides svc-build implementation -->
+    <target name="publish-impl" depends="udeploy-setup" >
+
+        <!-- Create the Zip file -->
+        <delete file="${ccc.build.basedir}/${ccc.svc.artifact.zip.name}" />
+        <zip destfile="${ccc.build.basedir}/${ccc.svc.artifact.zip.name}" >
+            <zipfileset dir="${ccc.build.jars.PROD.dir}" prefix="bin/jars/PROD" />
+            <zipfileset dir="${ccc.build.jars.DEBUG.dir}" prefix="bin/jars/DEBUG" />
+            <zipfileset dir="${ccc.build.wars.PROD.dir}" prefix="bin/wars/PROD" />
+            <zipfileset dir="${ccc.build.wars.DEBUG.dir}" prefix="bin/wars/DEBUG" />
+            <zipfileset dir="${ccc.build.src.java.dir}" prefix="src/java" />
+            <zipfileset dir="${ccc.build.api.dir}" prefix="api" />
+            <zipfileset dir="${template.out.dir}" includes="**/*.properties" prefix="config" />
+	    <zipfileset dir="out/crs-files" includes="**/*" prefix="crs-files" />
+            <zipfileset dir="${artifacts.dir}/urbandeploy/deploy" prefix="deploy" />
+        </zip>
+			
+        <!-- Publish Zip file -->
+        <copy todir="${artifacts.dir}" failonerror="false">
+            <fileset file="${ccc.build.basedir}/${ccc.svc.artifact.zip.name}" />
+        </copy>
+
+        <!-- Publish PROD Jars -->
+        <copy todir="${artifacts.dir}/bin/jars/PROD" failonerror="false">
+            <fileset dir="${ccc.build.jars.PROD.dir}" includes="*.jar" />
+        </copy>
+
+        <!-- Publish DEBUG Jars -->
+        <copy todir="${artifacts.dir}/bin/jars/DEBUG" failonerror="false">
+            <fileset dir="${ccc.build.jars.DEBUG.dir}" includes="*.jar" />
+        </copy>
+
+        <!-- Publish PROD Wars -->
+        <copy todir="${artifacts.dir}/bin/wars/PROD" failonerror="false">
+            <fileset dir="${ccc.build.wars.PROD.dir}" includes="*.war" />
+        </copy>
+
+        <!-- Publish DEBUG Wars -->
+        <copy todir="${artifacts.dir}/bin/wars/DEBUG" failonerror="false">
+            <fileset dir="${ccc.build.wars.DEBUG.dir}" includes="*.war" />
+        </copy>
+
+        <!-- Publish Properties files -->
+<!--
+        <copy todir="${artifacts.dir}/config" failonerror="false">
+            <fileset dir="${template.out.dir}" includes="**/*.properties" />
+        </copy>
+  -->
+
+        <!-- Publish Config files -->
+        <copy todir="${artifacts.dir}/config" failonerror="false">
+            <fileset dir="config" includes="*.properties" />
+        </copy>
+
+	<copy todir="${artifacts.dir}/crs-files" failonerror="false">
+	    <fileset dir="out/crs-files" />
+	</copy>
+
+        <!-- Publish mds files -->
+        <mkdir dir="${artifacts.dir}/config/mds" />
+        <copy todir="${artifacts.dir}/config/mds" failonerror="false">
+            <fileset dir="config/mds" includes="**/*" />
+        </copy>
+		
+        <!-- Publish findbugs report -->
+        <copy file="${findbugs.output}/findbugs-report.html" tofile="${findbugs.report.dir}/index.html" failonerror="false" />
+
+        <!-- CLOC: Publish lines of code -->
+        <copy todir="${artifacts.dir}" failonerror="false">
+            <fileset file="out/cloc.csv" />
+        </copy>
+
+    </target>
+	
+	
+</project>

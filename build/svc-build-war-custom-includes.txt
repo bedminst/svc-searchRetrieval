@@ -1,0 +1,17 @@
+# lib
+com.noelios.restlet.jar
+json-in-java.jar
+org.restlet.jar
+lucene-core-3.3.0.jar
+
+# Solrj set of jars
+apache-solr-solrj-3.3.0.jar
+commons-codec-1.4.jar
+commons-httpclient-3.1.jar
+slf4j-api-1.6.1.jar
+
+# pool 1.5, but sourced from lib for now
+commons-lang-2.2.jar
+jdom-0.7.jar
+configuration-resource-system.jar
+xstream-1.3.1.jar

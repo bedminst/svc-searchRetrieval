@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+"http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+  <!--  this bean is currently used through a static method call when
+        called from other shared services. For this use case, there is no
+        need to define the bean as we have done below. 
+        When the services are being used within the context of a web-app
+        however, we do want to initialize it here because it implements the 
+        ApplicationContextAware interface and we want the bean to know 
+        the application context that owns it.
+   -->
+  <bean id="mediaDeliveryServiceFinder" class="com.copyright.mediadelivery.svc.api.MediaDeliveryServiceFinder"/>
+</beans>

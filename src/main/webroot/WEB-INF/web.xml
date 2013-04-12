@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="2.5">
+
+	<display-name>svc-searchRetrieval</display-name>
+
+	<servlet>
+		<servlet-name>svc-searchRetrieval</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+	<servlet-name>jsp</servlet-name>
+	<url-pattern>/jsp/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>svc-searchRetrieval</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+	
+	<context-param>
+	  <param-name>crsModuleName</param-name>
+	  <param-value>SRS</param-value>
+	</context-param>
+	
+	<context-param>
+	  <param-name>versionData</param-name>
+	  <param-value>com/copyright/svc/searchRetrieval/versiondata.txt</param-value>
+	</context-param>
+	
+	<listener>
+	  <listener-class>com.copyright.crs.client.web.CRSContextLoaderListener</listener-class>
+	</listener>
+	
+
+</web-app>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+"http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean id="providerComponentFactory"
+		class="com.copyright.mediadelivery.framework.internal.search.ProviderComponentFactory">
+		<property name="handlers">
+			<list>
+				<bean id="CccWrProviderHandler"
+					class="com.copyright.srs.connectors.cccwr.CccWrProviderHandler">
+					<property name="searchHandlerBeanName" value="cccWrSearchHandler"/>	
+				</bean>							
+				<bean id="NatureArticleProviderHandler"
+					class="com.copyright.srs.connectors.sru.nature.NatureProviderHandler">
+					<property name="searchHandlerBeanName" value="natureArticleSearchHandler"/>	
+				</bean>							
+				<bean id="PubgetArticleProviderHandler"
+					class="com.copyright.srs.connectors.pubget.PubgetProviderHandler">
+					<property name="searchHandlerBeanName" value="pubgetArticleSearchHandler"/>	
+				</bean>							
+				<bean id="NYTHandler"
+					class="com.copyright.srs.connectors.nyt.NYTArticleProviderHandler">	
+					<property name="searchHandlerBeanName" value="NYTArticleSearchHandler"/>								
+					<property name="categoryToClassifierMappings">
+						<map>
+							<entry key="NEWS" value="Top/News"/>
+							<entry key="POLITICS" value="Top/News/Washington"/>							
+							<entry key="BUSINESS" value="Top/News/Business"/>
+							<entry key="TECHNOLOGY" value="Top/News/Business"/>
+							<entry key="ENTERTAINMENT" value="Top/Features/Movies"/>
+						</map>
+					</property>	
+				</bean>						
+			</list>
+		</property>
+	</bean>
+
+	
+	<bean id="cccWrSearchHandler" singleton="false" class="com.copyright.srs.connectors.cccwr.CccWrSearchHandler">
+		<property name="searcherClient" ref="searcherClient"/>								
+	</bean>
+				
+	<bean id="natureArticleSearchHandler" singleton="false" class="com.copyright.srs.connectors.sru.nature.NatureSearchHandler"/>
+				
+	<bean id="pubgetArticleSearchHandler" singleton="false" class="com.copyright.srs.connectors.pubget.PubgetSearchHandler"/>
+
+	<bean id="NYTArticleSearchHandler" singleton="false" class="com.copyright.srs.connectors.nyt.NYTArticleSearchHandler"/>	
+
+	<bean id="workAggregator"
+		class="com.copyright.mediadelivery.framework.internal.search.DefaultWorkAggregator">
+			<property name="duplicateWorkStrategies">
+				<list>
+					<bean id="NYTDuplicateWorkStrategy"
+						class="com.copyright.mediadelivery.framework.internal.search.DuplicateWorkStrategy_TitleAndOriginationDate">
+						<property name="providerKey" value="NYT"/>	
+					</bean>
+					<bean id="GrabDuplicateWorkStrategy"
+						class="com.copyright.mediadelivery.framework.internal.search.DuplicateWorkStrategy_TitleAndDuration">
+						<property name="providerKey" value="GRABNETWORKS"/>	
+					</bean>					
+				</list>
+		</property>		
+	</bean>	
+
+	<bean id="dedicatedSearchEngine"
+		class="com.copyright.mediadelivery.framework.internal.search.DedicatedSearchEngineImpl">
+	</bean>
+
+	<bean id="federatedSearchEngine"
+		class="com.copyright.svc.searchRetrieval.internal.SummitFederatedSearchEngineImpl">
+		<property name="maxCollectionTime" value="$MDS{search.maxCollectionTime}"/>		
+		<property name="sleepDuration" value="$MDS{search.sleepDuration}"/>		
+		<property name="percentageCollected" value="$MDS{search.percentageCollected}"/>		
+		<property name="taskExecutor">
+			<ref local="searchTaskExecutor" />
+		</property>
+	</bean>
+
+	<bean id="searchEngine"
+		class="com.copyright.mediadelivery.framework.internal.search.HybridSearchEngineImpl">
+		<property name="dedicatedSearchEngine">
+			<ref local="dedicatedSearchEngine" />
+		</property>
+		<property name="federatedSearchEngine">
+			<ref local="federatedSearchEngine" />
+		</property>
+	</bean>
+
+	<bean id="searchServices"
+		class="com.copyright.mediadelivery.svc.internal.SearchServicesImpl">
+		<property name="searchEngine">
+			<ref local="searchEngine" />
+		</property>
+		<property name="searchHistoryServices">
+			<ref local="searchHistoryServices" />
+		</property>		
+		<property name="targetResultCount" value="$MDS{svc.search.targetResultCount}"/>
+	</bean>
+	
+    <bean id="searchHistoryServices"
+        class="com.copyright.mediadelivery.framework.internal.mock.SearchHistoryServices_NoOpImpl">
+    </bean>
+    	
+	<bean id="searchTaskExecutor"
+		class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="100" />
+		<property name="maxPoolSize" value="200" />
+		<property name="queueCapacity" value="50" />
+	</bean>
+
+
+</beans>
